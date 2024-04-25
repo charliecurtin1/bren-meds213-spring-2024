@@ -50,9 +50,10 @@ CREATE TEMP TABLE Averages AS
         FROM Bird_eggs
         GROUP BY Nest_ID;
 
+SELECT * FROM Averages;
 ---- Output a table with the scientific name of each bird species and the max average egg volume 
 SELECT s.Scientific_name, MAX(a.Avg_volume) as Max_Avg_Volume
-    From Bird_nests b 
+    FROM Bird_nests b 
     JOIN Averages a ON b.Nest_ID = a.Nest_ID -- Join Nest_ID in Averages to Nest_ID in Bird_nests table
     JOIN Species s ON b.Species = s.Code -- Join Species in Bird_nests table to Code in Species table
     GROUP BY Scientific_name
@@ -60,4 +61,10 @@ SELECT s.Scientific_name, MAX(a.Avg_volume) as Max_Avg_Volume
 
 DROP TABLE Averages;
 
+SELECT s.Scientific_name, MAX(a.Avg_volume) as Max_Avg_Volume
+    FROM Bird_nests b 
+    JOIN Averages a USING (Nest_ID) -- Join Nest_ID in Averages to Nest_ID in Bird_nests table
+    JOIN Species s ON b.Species = s.Code -- Join Species in Bird_nests table to Code in Species table
+    GROUP BY Scientific_name
+    ORDER BY Max_Avg_Volume DESC;
 
