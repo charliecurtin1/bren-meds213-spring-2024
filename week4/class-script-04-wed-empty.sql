@@ -92,3 +92,42 @@ CREATE VIEW avg_snow_cover_new AS
 
 -- Ask 10: Let's move on to inspecting the nests and answering the following question: Which shorebird species makes the most eggs? Oh and I need a table with the common names, just because :)
 
+--- Week 4 assignment
+
+-- Part 1: Which sites have no egg data? Answer using all three techniques described in class
+
+SELECT * FROM Bird_eggs;
+SELECT * FROM Site;
+
+----- Method 1
+SELECT Code FROM Site
+    WHERE Code NOT IN (SELECT DISTINCT Site FROM Bird_eggs)
+    ORDER BY Code;
+
+----- Method 2: outer join
+SELECT Code
+    FROM Site LEFT JOIN Bird_eggs ON Code = Site
+    WHERE Site IS NULL
+    ORDER BY Code;
+
+---- Method 3: using the set operation except
+SELECT Code FROM Site
+    EXCEPT SELECT DISTINCT Site FROM Bird_eggs
+    ORDER BY Code;
+
+-- Part 2: Who worked with whom?
+SELECT * FROM Camp_assignment;
+
+SELECT * FROM Camp_assignment A
+    JOIN Camp_assignment B ON A.Site = B.Site
+    WHERE (A.Start <= B.End) AND (A.End >= B.Start)
+    AND (A.Site = 'lkri')
+    AND (A.Observer < B.Observer);
+
+---- Outputting the table with the column names changed
+SELECT A.Site, A.Observer AS Observer_1, B.Observer as Observer_2 FROM Camp_assignment A
+    JOIN Camp_assignment B ON A.Site = B.Site
+    WHERE (A.Start <= B.End) AND (A.End >= B.Start)
+    AND (A.Site = 'lkri')
+    AND (A.Observer < B.Observer);
+
