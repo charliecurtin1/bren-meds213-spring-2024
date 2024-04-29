@@ -95,11 +95,7 @@ CREATE VIEW avg_snow_cover_new AS
 --- Week 4 assignment
 
 -- Part 1: Which sites have no egg data? Answer using all three techniques described in class
-
-SELECT * FROM Bird_eggs;
-SELECT * FROM Site;
-
------ Method 1
+----- Method 1 
 SELECT Code FROM Site
     WHERE Code NOT IN (SELECT DISTINCT Site FROM Bird_eggs)
     ORDER BY Code;
@@ -125,9 +121,22 @@ SELECT * FROM Camp_assignment A
     AND (A.Observer < B.Observer);
 
 ---- Outputting the table with the column names changed
-SELECT A.Site, A.Observer AS Observer_1, B.Observer as Observer_2 FROM Camp_assignment A
+SELECT A.Site, A.Observer AS Observer_1, B.Observer AS Observer_2 FROM Camp_assignment A
     JOIN Camp_assignment B ON A.Site = B.Site
     WHERE (A.Start <= B.End) AND (A.End >= B.Start)
     AND (A.Site = 'lkri')
     AND (A.Observer < B.Observer);
 
+-- Part 3: Who's the culprit?
+SELECT * FROM bird_nests;
+SELECT * FROM Personnel;
+
+SELECT p.Name, COUNT(*) AS num_floated_nests
+    FROM bird_nests bn 
+    JOIN Personnel p ON p.Abbreviation = bn.Observer
+    WHERE (bn.Year >= 1998 AND bn.Year <= 2008)
+    AND (bn.Site = 'nome')
+    AND (bn.ageMethod = 'float')
+    GROUP BY p.Name
+    ORDER BY -num_floated_nests
+    LIMIT 1;

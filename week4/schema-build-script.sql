@@ -84,4 +84,5 @@ CREATE TABLE Snow_cover (
     Snow_cover INTEGER CHECK (Snow_cover > -1 AND Snow_cover < 101),
     Observer VARCHAR
 );
+
 COPY Snow_cover FROM 'snow_cover_fixedman_JB.csv' (header TRUE); -- csv manually altered
