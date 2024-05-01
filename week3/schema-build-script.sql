@@ -74,3 +74,13 @@ CREATE TABLE Bird_eggs (
     FOREIGN KEY (Nest_ID) REFERENCES Bird_nests (Nest_ID)
 );
 COPY Bird_eggs FROM 'ASDN_Bird_eggs.csv' (header TRUE);
+
+CREATE TABLE Snow_cover (
+    Site VARCHAR NOT NULL,
+    Year INTEGER NOT NULL CHECK (Year BETWEEN 1950 AND 2015),
+    Date DATE NOT NULL,
+    Plot VARCHAR, -- some Null in the data :/
+    Location VARCHAR NOT NULL,
+    Snow_cover INTEGER CHECK (Snow_cover > -1 AND Snow_cover < 101),
+    Observer VARCHAR
+);
