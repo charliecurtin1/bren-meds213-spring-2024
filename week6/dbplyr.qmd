@@ -1,0 +1,103 @@
+---
+title: "dbplyr"
+---
+
+```{r}
+library(tidyverse)
+library(DBI)
+library(dbplyr)
+library(duckdb)
+```
+
+## connect to database
+
+```{r}
+# open the connection
+conn <- DBI::dbConnect(duckdb::duckdb(), dbdir = "../week3/database.db")
+```
+
+```{r}
+# list the tables
+DBI::dbListTables(conn)
+```
+
+```{r}
+# open a specific table
+species <- tbl(conn, "Species")
+species
+```
+
+## SQL query
+
+```{r}
+# query where any codes start with the letter "a"
+df <- dbGetQuery(conn, "SELECT * FROM Species WHERE Code LIKE 'a%' ")
+df
+```
+
+## 'dbplyr'
+
+Using dbplyr
+
+```{r}
+# returns your filter statement
+species %>% 
+  filter(Relevance == "Study species") %>% 
+  select(Code, Scientific_name) %>% 
+  # translates the dplyr filtering into an SQL query
+  show_query()
+
+# returns your filter statement
+species %>% 
+  filter(Relevance == "Study species") %>% 
+  select(Code, Scientific_name) %>% 
+  # how to turn your query/filter into a df
+  collect()
+```
+
+Group by relevance and count the number of species in each group 
+```{r}
+species %>% 
+  group_by(Relevance) %>% 
+  summarise(num_species = n()) %>% 
+  # sort by descending value
+  arrange(-num_species) %>% 
+  collect()
+```
+
+Mutating
+
+Add an "X" in front of the Codes and update the code column
+
+```{r}
+new_species_code <- species %>% 
+  mutate(Code = paste0("X", Code)) %>%
+  collect()
+```
+
+Joining
+
+We want to left join to join the nest and the egg tables:
+
+```{r}
+# grab the tables
+eggs_db <- tbl(conn, "Bird_eggs")
+nests_db <- tbl(conn, "Bird_nests")
+
+eggs_db
+
+nests_db
+```
+
+```{r}
+nests_db %>% 
+  left_join(eggs_db, by = c("Nest_ID", "Book_page", "Year", "Site")) %>% 
+  collect()
+```
+
+## remove the connection that we opened at the beginning
+
+```{r}
+DBI::dbDisconnect(conn, shutdown = TRUE)
+```
+
